@@ -1,8 +1,6 @@
 Github Trending Cli
 ===================
 
-[![PyPI version](https://badge.fury.io/py/github-trending.svg)](https://badge.fury.io/py/github-trending)
-
 A cli which lists the trending repositories and developers from Github.
 
 Install
