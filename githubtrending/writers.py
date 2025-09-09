@@ -7,9 +7,9 @@ def print_title(is_repo=True):
     rows, cols = utils.get_console_size()
     title = "TRENDING {} ON GITHUB".format("REPOSITORIES" if is_repo else "DEVELOPERS")
     click.echo()
-    click.secho("%s" % ('#'*cols), bold=True)
-    click.secho("%*s" % (cols//2, title), bold=True)
-    click.secho("%s" % ('#'*cols), bold=True)
+    click.secho("%s" % ("#" * cols), bold=True)
+    click.secho("%*s" % (cols // 2, title), bold=True)
+    click.secho("%s" % ("#" * cols), bold=True)
 
 
 def print_headers(print_size, is_repo=True):
@@ -18,23 +18,13 @@ def print_headers(print_size, is_repo=True):
     click.echo()
 
     if is_repo:
-        click.secho(
-            "%*s" % (print_size["IDX"], '#'),
-            nl=False, bold=True)
-        click.secho(
-            "%*s" % (print_size["NAME"], "USER/REPO"),
-            nl=False, bold=True)
-        click.secho(
-            "%*s" % (print_size["LANG"], "LANG"),
-            nl=False, bold=True)
-        click.secho(
-            "%*s" % (print_size["STAR"], "STAR"),
-            nl=False, bold=True)
-        click.secho(
-            " %s" % ("DESCRIPTION"),
-            nl=False, bold=True)
+        click.secho("%*s" % (print_size["IDX"], "#"), nl=False, bold=True)
+        click.secho("%*s" % (print_size["NAME"], "USER/REPO"), nl=False, bold=True)
+        click.secho("%*s" % (print_size["LANG"], "LANG"), nl=False, bold=True)
+        click.secho("%*s" % (print_size["STAR"], "STAR"), nl=False, bold=True)
+        click.secho(" %s" % ("DESCRIPTION"), nl=False, bold=True)
     else:
-        click.secho("%*s" % (print_size["IDX"], '#'), nl=False, bold=True)
+        click.secho("%*s" % (print_size["IDX"], "#"), nl=False, bold=True)
         click.secho("%*s" % (print_size["DEV"], "DEV"), nl=False, bold=True)
         click.secho("%*s" % (print_size["REPO"], "REPO"), nl=False, bold=True)
         click.secho(" %s" % ("DESCRIPTION"), nl=False, bold=True)
@@ -48,36 +38,43 @@ def print_trending_repos(data):
     print_headers(print_size)
 
     for idx, each in enumerate(data):
-        repo_name = each.get('repo_name')
-        description = each.get('description')
-        stars = each.get('stars')
-        language = each.get('language')
+        repo_name = each.get("repo_name")
+        description = each.get("description")
+        stars = each.get("stars")
+        language = each.get("language")
 
         rows, cols = utils.get_console_size()
-        desc_width = cols - sum(print_size.values()) - 5 # 5 for spaces between columns
+        desc_width = cols - sum(print_size.values()) - 5  # 5 for spaces between columns
 
         if len(description) > desc_width:
-            description = description[:desc_width - 3] + "..."
+            description = description[: desc_width - 3] + "..."
 
         click.echo()
         click.secho(
-            "%*s" % (print_size["IDX"], str(idx+1)),
-            nl=False, bold=True, fg=COLOR['IDX'])
-        repo_url = each.get('url')
+            "%*s" % (print_size["IDX"], str(idx + 1)),
+            nl=False,
+            bold=True,
+            fg=COLOR["IDX"],
+        )
+        repo_url = each.get("url")
         hyperlink_repo_name = f"\033]8;;{repo_url}\033\\{repo_name}\033]8;;\033\\"
         click.secho(
             "%*s" % (print_size["NAME"], hyperlink_repo_name),
-            nl=False, bold=True, fg=COLOR['NAME'])
+            nl=False,
+            bold=True,
+            fg=COLOR["NAME"],
+        )
         click.secho(
             "%*s" % (print_size["LANG"], language),
-            nl=False, bold=True, fg=COLOR['LANG'])
+            nl=False,
+            bold=True,
+            fg=COLOR["LANG"],
+        )
         click.secho(
-            "%*s" % (print_size["STAR"], stars),
-            nl=False, bold=True, fg=COLOR['STARS'])
-        click.secho(
-            " %s" % (description),
-            nl=False, bold=True, fg=COLOR['DESC'])
-    print('')
+            "%*s" % (print_size["STAR"], stars), nl=False, bold=True, fg=COLOR["STARS"]
+        )
+        click.secho(" %s" % (description), nl=False, bold=True, fg=COLOR["DESC"])
+    print("")
 
 
 def print_trending_devs(data):
@@ -88,29 +85,36 @@ def print_trending_devs(data):
     print_headers(print_size, is_repo=False)
 
     for idx, each in enumerate(data):
-        dev_name = each.get('dev_name')
-        repo_name = each.get('repo_name')
-        description = each.get('description')
+        dev_name = each.get("dev_name")
+        repo_name = each.get("repo_name")
+        description = each.get("description")
 
         rows, cols = utils.get_console_size()
-        desc_width = cols - sum(print_size.values()) - 5 # 5 for spaces between columns
+        desc_width = cols - sum(print_size.values()) - 5  # 5 for spaces between columns
 
         if len(description) > desc_width:
-            description = description[:desc_width - 3] + "..."
+            description = description[: desc_width - 3] + "..."
 
         click.echo()
         click.secho(
-            "%*s" % (print_size["IDX"], str(idx+1)),
-            nl=False, bold=True, fg=COLOR['IDX'])
-        dev_url = each.get('url')
+            "%*s" % (print_size["IDX"], str(idx + 1)),
+            nl=False,
+            bold=True,
+            fg=COLOR["IDX"],
+        )
+        dev_url = each.get("url")
         hyperlink_dev_name = f"\033]8;;{dev_url}\033\\{dev_name}\033]8;;\033\\"
         click.secho(
             "%*s" % (print_size["DEV"], hyperlink_dev_name),
-            nl=False, bold=True, fg=COLOR['NAME'])
+            nl=False,
+            bold=True,
+            fg=COLOR["NAME"],
+        )
         click.secho(
             "%*s" % (print_size["REPO"], repo_name),
-            nl=False, bold=True, fg=COLOR['REPO'])
-        click.secho(
-            " %s" % (description),
-            nl=False, bold=True, fg=COLOR['DESC'])
-    print('')
+            nl=False,
+            bold=True,
+            fg=COLOR["REPO"],
+        )
+        click.secho(" %s" % (description), nl=False, bold=True, fg=COLOR["DESC"])
+    print("")
