@@ -52,21 +52,12 @@ def print_trending_repos(data):
         description = each.get('description')
         stars = each.get('stars')
         language = each.get('language')
-
-        rows, cols = utils.get_console_size()
-        desc_width = cols - sum(print_size.values()) - 5 # 5 for spaces between columns
-
-        if len(description) > desc_width:
-            description = description[:desc_width - 3] + "..."
-
         click.echo()
         click.secho(
             "%*s" % (print_size["IDX"], str(idx+1)),
             nl=False, bold=True, fg=COLOR['IDX'])
-        repo_url = each.get('url')
-        hyperlink_repo_name = f"\033]8;;{repo_url}\033\\{repo_name}\033]8;;\033\\"
         click.secho(
-            "%*s" % (print_size["NAME"], hyperlink_repo_name),
+            "%*s" % (print_size["NAME"], repo_name),
             nl=False, bold=True, fg=COLOR['NAME'])
         click.secho(
             "%*s" % (print_size["LANG"], language),
@@ -88,24 +79,15 @@ def print_trending_devs(data):
     print_headers(print_size, is_repo=False)
 
     for idx, each in enumerate(data):
+        click.echo()
         dev_name = each.get('dev_name')
         repo_name = each.get('repo_name')
         description = each.get('description')
-
-        rows, cols = utils.get_console_size()
-        desc_width = cols - sum(print_size.values()) - 5 # 5 for spaces between columns
-
-        if len(description) > desc_width:
-            description = description[:desc_width - 3] + "..."
-
-        click.echo()
         click.secho(
             "%*s" % (print_size["IDX"], str(idx+1)),
             nl=False, bold=True, fg=COLOR['IDX'])
-        dev_url = each.get('url')
-        hyperlink_dev_name = f"\033]8;;{dev_url}\033\\{dev_name}\033]8;;\033\\"
         click.secho(
-            "%*s" % (print_size["DEV"], hyperlink_dev_name),
+            "%*s" % (print_size["DEV"], dev_name),
             nl=False, bold=True, fg=COLOR['NAME'])
         click.secho(
             "%*s" % (print_size["REPO"], repo_name),

@@ -39,6 +39,40 @@ def make_etree(url):
     return (response, status_code)
 
 
+def get_trending_repo_names(tree):
+    repos = tree.xpath('//h3[@class="repo-list-name"]/a/@href')
+    return repos
+
+
+def get_trending_repo_description(tree):
+    repo_desc = tree.xpath('//p[@class="repo-list-description"]')
+    repo_desc = [" ".join([x for x in each.itertext()]) for each in repo_desc]
+    repo_desc = [replace_new_lines_and_strip(each) for each in repo_desc]
+    return repo_desc
+
+
+def get_trending_repo_meta(tree):
+    repo_meta = tree.xpath('//p[@class="repo-list-meta"]')
+    return repo_meta
+
+
+def get_trending_repo_stars_and_languages(repo_meta):
+    dot = u'•'.encode('utf8')
+    repo_stars_and_langauges = []
+    for each in repo_meta:
+        meta = each.text.strip().encode('utf8')
+        stars, language = '', 'unknown'
+        if dot in meta:
+            temp = meta.split(dot)
+            for each_option in temp:
+                if b"stars" in each_option:
+                    stars = replace_new_lines_and_strip(each_option).decode('utf8')
+                elif b"built by" not in each_option.lower() and b"stars" not in each_option.lower():
+                    language = replace_new_lines_and_strip(each_option).decode('utf8')
+            repo_stars_and_langauges.append([stars, language])
+    return repo_stars_and_langauges
+
+
 def get_trending_repos(**kwargs):
     repos = []
     language = kwargs.get('language', None)
@@ -50,28 +84,39 @@ def get_trending_repos(**kwargs):
         url = url + '?since={}'.format(timespan)
     tree, status_code = make_etree(url)
     if status_code == 200:
-        repo_elements = tree.xpath('//article[@class="Box-row"]')
-        for repo_element in repo_elements:
-            repo_name_element = repo_element.xpath('.//h2[@class="h3 lh-condensed"]/a/@href')
-            repo_name = repo_name_element[0] if repo_name_element else 'N/A'
-
-            desc_element = repo_element.xpath('.//p[@class="col-9 color-fg-muted my-1 pr-4"]')
-            description = " ".join(desc_element[0].itertext()).strip() if desc_element else 'N/A'
-
-            lang_element = repo_element.xpath('.//span[@itemprop="programmingLanguage"]/text()')
-            lang = lang_element[0].strip() if lang_element else 'N/A'
-
-            stars_element = repo_element.xpath('.//a[contains(@href, "stargazers")]/text()')
-            stars = "".join(stars_element).strip() if stars_element else 'N/A'
-
-            repos.append({
-                'repo_name': repo_name,
-                'description': description,
-                'stars': stars,
-                'language': lang,
-                'url': HOME_PAGE + str(repo_name)
-            })
+        repo_names = get_trending_repo_names(tree)
+        repo_desc = get_trending_repo_description(tree)
+        repo_meta = get_trending_repo_meta(tree)
+        repo_stars_and_languages = get_trending_repo_stars_and_languages(repo_meta)
+        repos = list(zip(repo_names, repo_desc, repo_stars_and_languages))
+        repos = [{'repo_name': repo_name,
+                  'description': description,
+                  'stars': stars,
+                  'language': lang,
+                  'url': HOME_PAGE + str(repo_name)}
+                 for repo_name, description, [stars, lang] in repos]
     return repos
+
+
+def get_trending_dev_names(tree):
+    devs = tree.xpath('//h2[@class="user-leaderboard-list-name"]')
+    devs = [" ".join([x for x in each.itertext()]) for each in devs]
+    devs = [replace_new_lines_and_multiple_spaces(replace_new_lines_and_strip(each)) for each in devs]
+    return devs
+
+
+def get_trending_dev_repo_names(tree):
+    dev_repo_names = tree.xpath('//span[@class="repo"]')
+    dev_repo_names = [" ".join([x for x in each.itertext()]) for each in dev_repo_names]
+    dev_repo_names = [replace_new_lines_and_strip(each) for each in dev_repo_names]
+    return dev_repo_names
+
+
+def get_trending_dev_repo_desc(tree):
+    dev_repo_desc = tree.xpath('//span[@class="repo-snipit-description css-truncate-target"]')
+    dev_repo_desc = [" ".join([x for x in each.itertext()]) for each in dev_repo_desc]
+    dev_repo_desc = [replace_new_lines_and_strip(each) for each in dev_repo_desc]
+    return dev_repo_desc
 
 
 def get_trending_devs(**kwargs):
@@ -85,24 +130,15 @@ def get_trending_devs(**kwargs):
         url = url + '?since={}'.format(timespan)
     tree, status_code = make_etree(url)
     if status_code == 200:
-        dev_elements = tree.xpath('//article[@class="Box-row d-flex"]')
-        for dev_element in dev_elements:
-            dev_name_element = dev_element.xpath('.//h1[@class="h3 lh-condensed"]/a')
-            dev_name = dev_name_element[0].text.strip() if dev_name_element else 'N/A'
-            dev_url = dev_name_element[0].get('href') if dev_name_element else ''
-
-            repo_name_element = dev_element.xpath('.//h1[@class="h4 lh-condensed"]/a/text()')
-            repo_name = repo_name_element[0].strip() if repo_name_element else 'N/A'
-
-            desc_element = dev_element.xpath('.//div[@class="f6 color-fg-muted mt-1"]')
-            description = " ".join(desc_element[0].itertext()).strip() if desc_element else ''
-
-            devs.append({
-                'dev_name': dev_name,
-                'repo_name': repo_name,
-                'description': description,
-                'url': HOME_PAGE + dev_url
-            })
+        dev_names = get_trending_dev_names(tree)
+        dev_repo_names = get_trending_dev_repo_names(tree)
+        dev_repo_desc = get_trending_dev_repo_desc(tree)
+        devs = list(zip(dev_names, dev_repo_names, dev_repo_desc))
+        devs = [{'dev_name': dev_name,
+                 'repo_name': repo_name,
+                 'description': description,
+                 'url': HOME_PAGE + '/' + dev_name.split(' ')[0]}
+                for dev_name, repo_name, description in devs]
     return devs
 
 

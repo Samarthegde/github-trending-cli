@@ -10,7 +10,7 @@ setup(
     long_description='''This python packages lists the trending repositories
      and developers on Github on the console. It is available as a command line
      utility.''',
-    author='Taranjeet Singh',
+    author='Samarth Hegde',
     license='MIT',
     classifiers=[
         # How mature is this project? Common values are
@@ -37,13 +37,13 @@ setup(
     ],
     keywords="github trending repo developers trending-repo",
     author_email='reachtotj@gmail.com',
-    url='https://github.com/staranjeet/github-trending-cli',
+    url='https://github.com/samarthegde/github-trending-cli',
     packages=['githubtrending'],
     install_requires=[
-        'requests==2.7.0',
-        "click>=5.0",
-        'lxml>=3.3'
-    ] + (["colorama==0.3.3"] if "win" in sys.platform else []),
+        'requests',
+        "click",
+        'lxml'
+    ] + (["colorama"] if "win" in sys.platform else []),
     entry_points={
         'console_scripts': [
             'githubtrending = githubtrending.trending:main'
